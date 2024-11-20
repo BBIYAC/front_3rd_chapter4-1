@@ -66,3 +66,31 @@ GitHub Repository Secret은 **코드에 민감한 데이터가 노출되지 않�
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws-region: ${{ secrets.AWS_REGION }}
 ```
+
+## CDN 도입을 통한 성능 최적화
+
+<img width="912" alt="image" src="https://github.com/user-attachments/assets/372de55a-4e4a-4b2a-ad5d-ee776efa2d66">
+
+### 1. 콘텐츠 크기 비교
+
+- S3 요청: 콘텐츠 크기 변화 없음 (transferred 용량 유지)
+- CloudFront 요청: 콘텐츠 크기 `506kB` → `266kB`로 감소
+- 효과: CloudFront의 캐싱으로 서버로의 리소스 요청 횟수 감소
+
+### 2. 응답 속도 비교
+
+- S3 요청: Load 시간 `590ms`, Finish 시간 `573ms`
+- CloudFront 요청: Load 시간 `336ms`, Finish 시간 `360ms`
+- 효과: CloudFront 사용 시 응답 속도가 Load 시간 `43%` 단축, Finish 시간 `37%` 단축
+
+### 3. 상세 성능 지표
+
+| **지표**          | **S3 요청** | **CloudFront 요청** | **개선율**         |
+|--------------------|-------------|----------------------|--------------------|
+| 콘텐츠 크기       | 506kB       | 266kB               | **47% 감소**       |
+| Load 시간         | 590ms       | 336ms               | **43% 단축**       |
+| Finish 시간       | 573ms       | 360ms               | **37% 단축**       |
+
+### 4. 결론
+
+정적 콘텐츠(JS, CSS, 이미지, 동영상 등) 을 다수 사용하는 경우 자주 요청되는 파일이 캐싱되어 네트워크 요청과 서버 부하 감소 효과를 기대할 수 있습니다. 또한 글로벌 사용자를 대상으로 가까운 엣지 서버에서 콘텐츠를 제공해 지연을 줄이고 사용자 경험을 향상시킬 수 있습니다.
